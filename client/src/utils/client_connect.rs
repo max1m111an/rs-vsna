@@ -16,7 +16,7 @@ pub async fn client_connect(config: &Config) {
     let port: &str = &read_string();
 
     let addr: String = if ip.is_empty() || port.is_empty() {
-        config.get_addr()
+        config.socket()
     } else {
         format!("{}:{}", ip, port)
     };

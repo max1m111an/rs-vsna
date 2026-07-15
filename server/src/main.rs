@@ -4,14 +4,14 @@ mod utils;
 use std::{collections::HashMap, sync::Arc};
 use tokio::{net::TcpListener, sync::RwLock};
 use tracing::{error, info};
+use local_ip_address::list_afinet_netifas;
 use crate::{
     config::Config, utils::ws::{Clients, handle_connection}
 };
-use local_ip_address::list_afinet_netifas;
 
 /// Run WS server
 async fn start_server(config: Config) {
-    let addr: String = config.get_addr();
+    let addr: String = config.socket();
     let listener = TcpListener::bind(&addr).await;
     info!("WebSocket server is listening on {}", addr);
 

@@ -5,7 +5,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct Config {
-    pub address: String,
+    pub ip: String,
     pub port: String,
     pub server_path: String,
     pub max_size: u16,
@@ -18,7 +18,7 @@ impl Config {
         Ok(serde_json::from_str(&res)?)
     }
 
-    pub fn get_addr(&self) -> String {
-        format!("{}:{}", self.address, self.port)
+    pub fn socket(&self) -> String {
+        format!("{}:{}", self.ip, self.port)
     }
 }

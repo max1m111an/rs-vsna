@@ -37,7 +37,7 @@ pub async fn client_cli(config: &Config, ws_stream: WebSocketClient) {
                     }
                 }
             },
-            _ => eprintln!("[!] Unknown command"),
+            c => eprintln!("[!] Unknown command: {}", c),
         }
 
         if let Err(e) = client_handler.check_connection().await {

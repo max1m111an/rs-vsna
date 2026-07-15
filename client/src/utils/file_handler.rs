@@ -3,12 +3,11 @@ use std::{
     path::Path,
 };
 use tokio_tungstenite::tungstenite::{Bytes, Message};
-use tracing::error;
 use walkdir::{WalkDir, Error};
 use tokio::task;
 use crate::{
     config::Config,
-    utils::{filepack::FilePacket},
+    utils::filepack::FilePacket,
 };
 
 #[cfg(unix)]
@@ -90,12 +89,12 @@ pub async fn get_struct_paths_files_with_ignored(config: &Config, input: &String
         
     let path_obj: &Path = Path::new(&path);
     if !path_obj.exists() {
-        error!("[!] Path {} does not exist", path);
+        eprintln!("[!] Path {} does not exist", path);
         return "!".to_string();
     }
 
     if !path_obj.is_dir() {
-        error!("[!] {} is not a directory", path);
+        eprintln!("[!] {} is not a directory", path);
         return "!".to_string();
     }
 
@@ -111,7 +110,7 @@ async fn get_ignored_patterns(ignored: &Vec<&str>) -> Result<Vec<String>, ()> {
                 Some(c) => c != '!',
                 None => true,
             }) {
-            error!("[!] Incorrrect ignored input");
+            eprintln!("[!] Incorrrect ignored input");
             return Err(());
         }
         // For now support only *file*, *.fmt patterns check
@@ -126,7 +125,7 @@ async fn get_ignored_patterns(ignored: &Vec<&str>) -> Result<Vec<String>, ()> {
                 ignored_patterns.push((&i[2..i.len()-1]).to_string());
 
             } else {
-                error!("[!] Unknown error");
+                eprintln!("[!] Unknown error");
                 return Err(());
             }
         }
