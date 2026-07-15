@@ -8,10 +8,10 @@ use serde::Deserialize;
 /// JSON Config struct as env settings
 #[derive(Debug, Deserialize, Clone)]
 pub struct Config {
-    pub ip: String,
-    pub port: String,
-    pub client_path: String,
     pub auto_sync: bool,
+    pub port: u8,
+    pub ip: String,
+    pub client_path: String,
 }
 
 impl Config {
@@ -35,14 +35,14 @@ impl Config {
             return Err("[!] Port cannot be empty".to_string());
         }
         
-        let port_num = port.parse::<u16>()
+        let port_num = port.parse::<u8>()
             .map_err(|_| format!("[!] '{}' is not a valid port number (must be 1-65535)", port))?;
         
         if port_num == 0 {
             return Err("[!] Port 0 is reserved and cannot be used".to_string());
         }
         
-        self.port = port.to_string();
+        self.port = port_num;
         Ok(())
     }
     
@@ -82,7 +82,7 @@ impl Config {
     pub fn new(ip: String, port: String, client_path: String, auto_sync: String) -> Result<Self, Box<dyn std::error::Error>> {
         let mut temp_config: Config = Self {
             ip: String::new(),
-            port: String::new(),
+            port: 0,
             client_path: String::new(),
             auto_sync: false,
         };
@@ -106,7 +106,6 @@ impl Config {
             temp_json["auto_sync"].to_string(),
         ) {
             Ok(config) => {
-                println!("[*] {:?}", config);
                 Ok(config)
             }
             Err(e) => {

@@ -4,8 +4,26 @@ use crate::{
         file_handler::read_string,
         ws::WebSocketClient,
         command_handler::ClientCommandHandler,
+        client_connect::client_connect,
     },
 };
+
+/// First CLI layer
+pub async fn start_client(config: &Config) {
+    loop {
+        println!("");
+        println!("[0] Exit");
+        println!("[1] Connect");
+
+        let choice: &str = &read_string();
+        
+        match choice {
+            "0" => break,
+            "1" => client_connect(&config).await,
+            _ => eprintln!("[!] Unknown command")
+        }
+    }
+}
 
 /// Second CLI layer, if it successfully connected to WS
 pub async fn client_cli(config: &Config, ws_stream: WebSocketClient) {

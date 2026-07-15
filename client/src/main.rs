@@ -4,28 +4,8 @@ mod utils;
 use clap::Parser;
 use crate::{
     config::Config,
-    utils::{
-        client_connect::client_connect,
-        file_handler::read_string,
-    },
+    utils::client_cli::start_client,
 };
-
-/// First CLI layer
-async fn main_cli(config: &Config) {
-    loop {
-        println!("");
-        println!("[0] Exit");
-        println!("[1] Connect");
-
-        let choice: &str = &read_string();
-        
-        match choice {
-            "0" => break,
-            "1" => client_connect(&config).await,
-            _ => eprintln!("[!] Unknown command")
-        }
-    }
-}
 
 /// Rust-VSNA client CLI
 #[derive(Parser, Debug)]
@@ -62,9 +42,7 @@ async fn main() {
     let auto_sync: String = args.auto_sync;
     let config_file: Option<String> = args.config;
 
-    let config = if let Some(config_path) = config_file {
-        println!("[*] Loading config from {config_path}");
-        
+    let config = if let Some(config_path) = config_file {        
         if !std::path::Path::new(&config_path).exists() {
             eprintln!("[!] Config file '{}' does not exist!", config_path);
             return;
@@ -78,7 +56,7 @@ async fn main() {
     match config {
         Ok(config) => {
             println!("{config:?}");
-            main_cli(&config).await;
+            start_client(&config).await;
         }
         Err(e) => {
             eprintln!("{e}");
