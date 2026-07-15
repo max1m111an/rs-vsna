@@ -1,6 +1,6 @@
 {
-    "ip": "0.0.0.0",
-    "port": 8080,
+    "ip": "127.0.0.1",
+    "port": 5555,
     "auto_sync": false,
-    "client_path": "path/to/"
+    "client_path": "E:\\"
 }

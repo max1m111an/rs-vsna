@@ -9,7 +9,7 @@ use serde::Deserialize;
 #[derive(Debug, Deserialize, Clone)]
 pub struct Config {
     pub auto_sync: bool,
-    pub port: u8,
+    pub port: u16,
     pub ip: String,
     pub client_path: String,
 }
@@ -35,7 +35,7 @@ impl Config {
             return Err("[!] Port cannot be empty".to_string());
         }
         
-        let port_num = port.parse::<u8>()
+        let port_num = port.parse::<u16>()
             .map_err(|_| format!("[!] '{}' is not a valid port number (must be 1-65535)", port))?;
         
         if port_num == 0 {

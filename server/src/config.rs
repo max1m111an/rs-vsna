@@ -7,7 +7,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct Config {
-    pub port: u8,
+    pub port: u16,
     pub max_clients: u8,
     pub ip: String,
     pub server_path: String,
@@ -35,7 +35,7 @@ impl Config {
         }
         
         let port_num = port.parse::<u16>()
-            .map_err(|_| format!("[!] '{}' is not a valid port number (must be 1-65535)", port))? as u8;
+            .map_err(|_| format!("[!] '{}' is not a valid port number (must be 1-65535)", port))?;
         
         if port_num == 0 {
             return Err("[!] Port 0 is reserved and cannot be used".to_string());

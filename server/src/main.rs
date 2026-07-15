@@ -37,7 +37,7 @@ struct Cli {
     ip: String,
 
     /// Port to bind to
-    #[arg(short, long, default_value = "8080")]
+    #[arg(short, long, default_value = "5555")]
     port: String,
 
     /// Server directory to sync
