@@ -48,7 +48,7 @@ If you have not `cargo` yet -> [install it](https://doc.rust-lang.org/cargo/gett
 |---|---|---|
 | `-m`, `--max-clients <count>` | set max clients | 1 |
 
-# Run Examples
+# Run Examples (client)
 1. With CLI flags
 ```bash
 .\client.exe -p 8080 -d /path/to/client -i 192.168.0.1
@@ -61,5 +61,21 @@ If you have not `cargo` yet -> [install it](https://doc.rust-lang.org/cargo/gett
 
 3. As cargo
 ```bash
-cargo run --bin client -- -p 8080 -d D:\ -i 192.168.0.1
+cargo run --bin client -- -p 8080 -d D:\ -i 0.0.0.0
+```
+
+# Run Examples (server)
+1. With CLI flags
+```bash
+.\server.exe -p 8080 -d /path/to/server -i 0.0.0.0
+```
+
+2. With config
+```bash
+.\server.exe -c .\__config__.example.json
+```
+
+3. As cargo
+```bash
+cargo run --bin server -- -p 8080 -d D:\ -i 0.0.0.0
 ```
