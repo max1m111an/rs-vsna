@@ -1,9 +1,10 @@
 mod config;
 mod utils;
 
-use std::{collections::HashMap, sync::Arc};
+use clap::Parser;
+use std::{collections::HashMap,sync::Arc};
 use tokio::{net::TcpListener, sync::RwLock};
-use tracing::{error, info};
+use tracing::info;
 use local_ip_address::list_afinet_netifas;
 use crate::{
     config::Config, utils::ws::{Clients, handle_connection}
@@ -27,29 +28,75 @@ async fn start_server(config: Config) {
     }
 }
 
+/// Rust-VSNA server CLI
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    /// IP address to bind to
+    #[arg(short, long, default_value = "0.0.0.0")]
+    ip: String,
+
+    /// Port to bind to
+    #[arg(short, long, default_value = "8080")]
+    port: String,
+
+    /// Server directory to sync
+    #[arg(short, long, default_value = "")]
+    dir: String,
+
+    /// Max number of clients
+    #[arg(short, long, default_value = "1")]
+    max_clients: String,
+
+    /// Config file path
+    #[arg(short, long)]
+    config: Option<String>,
+}
+
+fn print_all_net_interfaces() {
+    println!("Available IPs:");
+    if let Ok(interfaces) = list_afinet_netifas() {
+        for (name, ip) in interfaces {
+            if ip.is_ipv4() && !ip.is_loopback() {
+                println!("- {} ({})", ip, name);
+            }
+        }
+    } else {
+        eprintln!("[!] Err get interfaces");
+    }
+}
 
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    if let Ok(config) = Config::new() {
-        println!("{config:?}");
-        println!("Server IPs:");
-    
-        match list_afinet_netifas() {
-            Ok(interfaces) => {
-                for (name, ip) in interfaces {
-                    if ip.is_ipv4() && !ip.is_loopback() {
-                        println!("- {} ({})", ip, name);
-                    }
-                }
-            }
-            Err(e) => {
-                eprintln!("[!] Err get interfaces: {}", e);
-            }
+    let args = Cli::parse();
+
+    let ip: String = args.ip;
+    let port: String = args.port;
+    let dir: String = args.dir;
+    let max_clients: String = args.max_clients;
+    let config_file: Option<String> = args.config;
+
+    let config = if let Some(config_path) = config_file {        
+        if !std::path::Path::new(&config_path).exists() {
+            eprintln!("[!] Config file '{}' does not exist!", config_path);
+            return;
         }
-        start_server(config).await;
+        
+        Config::load_from_file(config_path)
     } else {
-        error!("[!] Error with config");
+        Config::new(ip, port, dir, max_clients)
+    };
+    
+    match config {
+        Ok(config) => {
+            print_all_net_interfaces();
+            println!("{config:?}");
+            start_server(config).await;
+        }
+        Err(e) => {
+            eprintln!("{e}");
+        }
     }
 }
